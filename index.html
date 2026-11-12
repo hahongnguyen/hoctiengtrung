@@ -207,12 +207,31 @@ if ("speechSynthesis" in window) {
   pickVoice();
   speechSynthesis.onvoiceschanged = pickVoice;
 }
+const ttsAudio = new Audio();
+ttsAudio.preload = "auto";
+function ttsUrls(t) {
+  const q = encodeURIComponent(t);
+  return [
+    "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&q=" + q,
+    "https://fanyi.baidu.com/gettts?lan=zh&spd=4&source=web&text=" + q,
+    "https://dict.youdao.com/dictvoice?audio=" + q + "&le=zh"
+  ];
+}
 function speakFallback(t) {
-  // Dự phòng khi máy chưa có giọng tiếng Trung: phát file âm thanh qua mạng
-  try {
-    const a = new Audio("https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&q=" + encodeURIComponent(t));
-    a.play().catch(() => alert("Máy chưa có giọng đọc tiếng Trung. Hãy cài giọng Trung trong Cài đặt của điện thoại, hoặc mở bằng Chrome/Safari."));
-  } catch (e) {}
+  // Máy không có giọng Trung: thử lần lượt các nguồn âm thanh qua mạng
+  const urls = ttsUrls(t);
+  let k = 0;
+  const tryNext = () => {
+    if (k >= urls.length) {
+      alert("Không phát được âm thanh. Kiểm tra mạng và âm lượng media, rồi thử lại nhé.");
+      return;
+    }
+    ttsAudio.onerror = () => { k++; tryNext(); };
+    ttsAudio.src = urls[k];
+    const pr = ttsAudio.play();
+    if (pr && pr.catch) pr.catch(() => { k++; tryNext(); });
+  };
+  tryNext();
 }
 function speak(t) {
   if (!("speechSynthesis" in window)) return speakFallback(t);
