@@ -217,19 +217,27 @@ function ttsUrls(t) {
     "https://dict.youdao.com/dictvoice?audio=" + q + "&le=zh"
   ];
 }
+let ttsToken = 0;
 function speakFallback(t) {
   // Máy không có giọng Trung: thử lần lượt các nguồn âm thanh qua mạng
   const urls = ttsUrls(t);
+  const my = ++ttsToken;
   let k = 0;
   const tryNext = () => {
-    if (k >= urls.length) {
-      alert("Không phát được âm thanh. Kiểm tra mạng và âm lượng media, rồi thử lại nhé.");
-      return;
-    }
-    ttsAudio.onerror = () => { k++; tryNext(); };
-    ttsAudio.src = urls[k];
+    if (my !== ttsToken || k >= urls.length) return; // hết nguồn thì im lặng
+    const idx = k;
+    let advanced = false;
+    const fail = () => {
+      if (advanced || my !== ttsToken || idx !== k) return;
+      advanced = true; k++; tryNext();
+    };
+    ttsAudio.onerror = fail;
+    ttsAudio.src = urls[idx];
     const pr = ttsAudio.play();
-    if (pr && pr.catch) pr.catch(() => { k++; tryNext(); });
+    if (pr && pr.catch) pr.catch(e => {
+      if (e && e.name === "AbortError") return; // bị ngắt do đổi nguồn, bỏ qua
+      fail();
+    });
   };
   tryNext();
 }
