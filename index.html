@@ -197,7 +197,7 @@ const put = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catc
 
 let known = new Set(get("hsk1_known", [])), st = get("hsk1_streak", { n: 0, last: "" });
 let lesson = -1, wr = null;
-let srs = get("hsk1_srs", {}), day = get("hsk1_day", { t: 0, n: 0 }), goal = +get("hsk1_goal", 10), rev = get("hsk1_rev", false);
+let srs = get("hsk1_srs", {}), day = get("hsk1_day", { t: 0, n: 0 }), goal = +get("hsk1_goal", 10), rev = get("hsk1_rev2", false);
 const GAP = [0, 1, 2, 4, 7, 15, 30];
 const today = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 6e4) / 864e5);
 get("hsk1_known", []).forEach(h => { if (!srs[h]) srs[h] = { b: 3, d: today() + 3 }; });
@@ -296,7 +296,7 @@ function learn() {
   $("pinyin").hidden = !flipped; $("hv").hidden = !flipped || !w.hv;
   $("say").hidden = rev && !flipped; $("flip").hidden = flipped;
   $("back").hidden = !flipped; $("rate").hidden = !flipped;
-  $("dir").textContent = rev ? "Nghĩa → Chữ Hán (đổi)" : "Chữ Hán → Nghĩa (đổi)";
+  $("dir").textContent = rev ? "Đang hiện: Nghĩa trước. Bấm để hiện chữ Hán trước" : "Đang hiện: Chữ Hán trước. Bấm để hiện nghĩa trước";
   $("r0").textContent = "lại ngay"; $("r1").textContent = "1 ngày";
   $("r2").textContent = (GAP[c ? Math.min(6, c.b + 1) : 2]) + " ngày";
   $("note").hidden = !w.n;
@@ -337,7 +337,7 @@ function rate(r) {
 $("flip").onclick = () => { flipped = true; learn(); };
 $("rate").querySelectorAll("button").forEach(b => b.onclick = () => rate(+b.dataset.r));
 $("skip").onclick = () => { qu.push(qu.shift()); flipped = false; learn(); };
-$("dir").onclick = () => { rev = !rev; put("hsk1_rev", rev); learn(); };
+$("dir").onclick = () => { rev = !rev; put("hsk1_rev2", rev); learn(); };
 $("goal").onchange = e => { goal = +e.target.value; put("hsk1_goal", goal); learn(); };
 $("more").onclick = () => { buildQueue(true); learn(); };
 $("say").onclick = () => speak(qu[0].h);
