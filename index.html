@@ -47,6 +47,12 @@ select,button{font:inherit}
 .qh{font:600 56px/1.2 "Noto Serif SC",serif;margin:8px 0;text-align:center}
 .qm{font-size:24px;text-align:center;margin:12px 0}
 .score{font-size:48px;font-weight:600;text-align:center;margin:12px 0}
+.bar{height:8px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;width:0;background:var(--jade);transition:width .3s}
+.rate{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.rate .btn{display:flex;flex-direction:column;align-items:center;line-height:1.3}
+.rate small{color:var(--slate);font-size:12px}
+.btn.bad{border-color:var(--bad);color:var(--bad)}
 footer{text-align:center;margin-top:24px}
 </style>
 </head>
@@ -60,23 +66,30 @@ footer{text-align:center;margin-top:24px}
   </div>
 
   <section id="learn">
-    <div class="box top">
-      <div class="hanzi" id="hanzi"></div>
-      <div class="pinyin" id="pinyin"></div>
-      <div class="meaning" id="meaning"></div>
-      <span class="hv" id="hv"></span>
-      <div class="row" style="justify-content:center;margin-top:10px"><button id="say" class="btn">Nghe phát âm</button></div>
+    <div class="box"><div class="row" style="justify-content:space-between"><span class="muted" id="ptext"></span><label class="muted">Mục tiêu <select id="goal" class="btn" style="min-height:32px;padding:2px 8px"><option>5</option><option>10</option><option>20</option></select> thẻ/ngày</label></div><div class="bar"><i id="pbar"></i></div></div>
+    <div class="box top" id="empty" hidden><p>Hết thẻ cần ôn trong bài này hôm nay.</p><p class="muted">Quay lại ngày mai để ôn tiếp, hoặc làm Quiz.</p><button id="more" class="btn main" style="margin-top:10px">Học thêm từ mới</button></div>
+    <div id="card">
+      <div class="box top">
+        <div class="hanzi" id="hanzi"></div>
+        <div class="pinyin" id="pinyin"></div>
+        <div class="meaning" id="meaning"></div>
+        <span class="hv" id="hv"></span>
+        <div class="row" style="justify-content:center;margin-top:10px"><button id="say" class="btn">Nghe phát âm</button><button id="flip" class="btn main">Lật thẻ</button></div>
+      </div>
+      <div id="back">
+        <div class="box" id="note"><span class="tag" id="tag"></span><p id="ntext"></p></div>
+        <div class="box top">
+          <p class="muted" style="margin-bottom:8px">Tập viết từng nét</p>
+          <div class="chips" id="chars"></div>
+          <div id="wbox"></div>
+          <p class="muted" id="werr" role="status" style="margin-top:6px;min-height:22px"></p>
+          <div class="row" style="justify-content:center"><button id="anim" class="btn">Xem thứ tự nét</button><button id="tryw" class="btn main">Tự viết</button></div>
+        </div>
+      </div>
+      <div class="rate" id="rate"><button class="btn bad" data-r="0">Quên<small id="r0"></small></button><button class="btn" data-r="1">Khó<small id="r1"></small></button><button class="btn main" data-r="2">Dễ<small id="r2"></small></button></div>
+      <div class="row" style="justify-content:space-between;margin:12px 0 4px"><button id="dir" class="btn"></button><button id="skip" class="btn">Bỏ qua</button></div>
+      <div class="row" style="justify-content:space-between"><span class="muted" id="count"></span><span class="muted" id="known"></span></div>
     </div>
-    <div class="box" id="note"><span class="tag" id="tag"></span><p id="ntext"></p></div>
-    <div class="box top">
-      <p class="muted" style="margin-bottom:8px">Tập viết từng nét</p>
-      <div class="chips" id="chars"></div>
-      <div id="wbox"></div>
-      <p class="muted" id="werr" role="status" style="margin-top:6px;min-height:22px"></p>
-      <div class="row" style="justify-content:center"><button id="anim" class="btn">Xem thứ tự nét</button><button id="tryw" class="btn main">Tự viết</button></div>
-    </div>
-    <div class="row" style="justify-content:space-between;margin:12px 0 4px"><span class="muted" id="count"></span><span class="muted" id="known"></span></div>
-    <div class="row"><button id="prev" class="btn">Trước</button><button id="no" class="btn">Chưa thuộc</button><button id="yes" class="btn main">Đã thuộc</button><button id="next" class="btn">Sau</button></div>
   </section>
 
   <section id="qz" hidden><div class="box" id="quiz"></div></section>
@@ -183,7 +196,19 @@ const get = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; }
 const put = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 
 let known = new Set(get("hsk1_known", [])), st = get("hsk1_streak", { n: 0, last: "" });
-let lesson = -1, i = 0, wr = null;
+let lesson = -1, wr = null;
+let srs = get("hsk1_srs", {}), day = get("hsk1_day", { t: 0, n: 0 }), goal = +get("hsk1_goal", 10), rev = get("hsk1_rev", false);
+const GAP = [0, 1, 2, 4, 7, 15, 30];
+const today = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 6e4) / 864e5);
+get("hsk1_known", []).forEach(h => { if (!srs[h]) srs[h] = { b: 3, d: today() + 3 }; });
+const isKnown = w => srs[w.h] && srs[w.h].b >= 3;
+let qu = [], flipped = false;
+function buildQueue(more) {
+  const d = deck(), t = today();
+  const fresh = d.filter(w => !srs[w.h]).slice(0, goal);
+  qu = more ? fresh : [...d.filter(w => srs[w.h] && srs[w.h].d <= t), ...fresh];
+  flipped = false;
+}
 const deck = () => lesson < 0 ? W : W.slice(lesson * PER, (lesson + 1) * PER);
 
 function bump() {
@@ -196,7 +221,7 @@ function showStreak() { $("streak").textContent = st.n ? `Chuỗi ${st.n} ngày 
 
 $("lesson").innerHTML = `<option value="-1">Tất cả (${W.length} từ)</option>` +
   Array.from({ length: LESSONS }, (_, n) => `<option value="${n}">Bài ${n + 1} (từ ${n * PER + 1}–${Math.min((n + 1) * PER, W.length)})</option>`).join("");
-$("lesson").onchange = e => { lesson = +e.target.value; i = 0; learn(); startQuiz(); };
+$("lesson").onchange = e => { lesson = +e.target.value; buildQueue(); learn(); startQuiz(); };
 
 let zhVoice = null;
 function pickVoice() {
@@ -254,19 +279,35 @@ function speak(t) {
 
 /* ----- học từ ----- */
 function learn() {
-  const d = deck(), w = d[i];
+  const t = today(); if (day.t !== t) day = { t, n: 0 };
+  $("ptext").textContent = `Hôm nay ${Math.min(day.n, goal)}/${goal} thẻ` + (day.n >= goal ? " – đạt mục tiêu!" : "");
+  $("pbar").style.width = Math.min(100, day.n / goal * 100) + "%";
+  $("goal").value = goal;
+  const d = deck();
+  $("known").textContent = `Đã thuộc ${d.filter(isKnown).length}/${d.length}`;
+  const empty = !qu.length;
+  $("empty").hidden = !empty; $("card").hidden = empty;
+  if (empty) { $("more").hidden = !d.some(x => !srs[x.h]); return; }
+  const w = qu[0], c = srs[w.h];
   $("hanzi").textContent = w.h; $("pinyin").textContent = w.p; $("meaning").textContent = w.m;
-  $("hv").hidden = !w.hv; $("hv").textContent = "Hán Việt: " + (w.hv || "");
+  $("hv").textContent = "Hán Việt: " + (w.hv || "");
+  $("hanzi").hidden = rev && !flipped; $("meaning").hidden = !rev && !flipped;
+  $("meaning").style.fontSize = rev && !flipped ? "28px" : "";
+  $("pinyin").hidden = !flipped; $("hv").hidden = !flipped || !w.hv;
+  $("say").hidden = rev && !flipped; $("flip").hidden = flipped;
+  $("back").hidden = !flipped; $("rate").hidden = !flipped;
+  $("dir").textContent = rev ? "Nghĩa → Chữ Hán (đổi)" : "Chữ Hán → Nghĩa (đổi)";
+  $("r0").textContent = "lại ngay"; $("r1").textContent = "1 ngày";
+  $("r2").textContent = (GAP[c ? Math.min(6, c.b + 1) : 2]) + " ngày";
   $("note").hidden = !w.n;
   if (w.n) { $("tag").textContent = w.t === "n" ? "Nguồn gốc" : "Mẹo nhớ"; $("tag").className = "tag " + w.t; $("ntext").textContent = w.n; }
-  $("chars").innerHTML = [...w.h].map((c, k) => `<button class="btn ch" data-k="${k}">${c}</button>`).join("");
+  $("chars").innerHTML = [...w.h].map((ch, k) => `<button class="btn ch" data-k="${k}">${ch}</button>`).join("");
   $("chars").querySelectorAll(".ch").forEach(b => b.onclick = () => draw(+b.dataset.k));
-  $("count").textContent = `Từ ${i + 1}/${d.length}`;
-  $("known").textContent = `Đã thuộc ${d.filter(x => known.has(x.h)).length}/${d.length}`;
-  draw(0);
+  $("count").textContent = `Còn ${qu.length} thẻ trong phiên`;
+  if (flipped) draw(0); else { if (wr) { try { wr.cancelQuiz(); } catch (e) {} } $("wbox").innerHTML = ""; $("werr").textContent = ""; }
 }
 function draw(k) {
-  const c = [...deck()[i].h][k];
+  const c = [...qu[0].h][k];
   $("chars").querySelectorAll(".ch").forEach((b, n) => b.classList.toggle("on", n === k));
   if (wr) { try { wr.cancelQuiz(); } catch (e) {} }
   $("wbox").innerHTML = ""; $("werr").textContent = "";
@@ -283,12 +324,23 @@ $("tryw").onclick = () => {
   $("werr").textContent = "Hãy vẽ từng nét theo thứ tự. Sai nét sẽ được gợi ý.";
   wr.quiz({ onComplete: () => { $("werr").textContent = "Giỏi lắm, bạn đã viết đúng hết các nét!"; bump(); } });
 };
-function go(s) { const n = deck().length; i = (i + s + n) % n; learn(); }
-$("prev").onclick = () => go(-1);
-$("next").onclick = () => go(1);
-$("say").onclick = () => speak(deck()[i].h);
-$("yes").onclick = () => { known.add(deck()[i].h); put("hsk1_known", [...known]); bump(); go(1); };
-$("no").onclick = () => { known.delete(deck()[i].h); put("hsk1_known", [...known]); go(1); };
+function rate(r) {
+  const w = qu.shift(), t = today(), c = srs[w.h] || { b: 0, d: t, fresh: 1 };
+  if (r === 0) { c.b = 0; c.d = t; qu.push(w); }
+  else if (r === 1) { c.b = Math.max(1, c.b); c.d = t + 1; }
+  else { c.b = c.fresh ? 2 : Math.min(6, c.b + 1); c.d = t + GAP[c.b]; }
+  delete c.fresh; srs[w.h] = c; put("hsk1_srs", srs);
+  if (day.t !== t) day = { t, n: 0 };
+  day.n++; put("hsk1_day", day); bump();
+  flipped = false; learn();
+}
+$("flip").onclick = () => { flipped = true; learn(); };
+$("rate").querySelectorAll("button").forEach(b => b.onclick = () => rate(+b.dataset.r));
+$("skip").onclick = () => { qu.push(qu.shift()); flipped = false; learn(); };
+$("dir").onclick = () => { rev = !rev; put("hsk1_rev", rev); learn(); };
+$("goal").onchange = e => { goal = +e.target.value; put("hsk1_goal", goal); learn(); };
+$("more").onclick = () => { buildQueue(true); learn(); };
+$("say").onclick = () => speak(qu[0].h);
 
 /* ----- quiz: chữ → nghĩa, hoặc nghĩa → chữ ----- */
 let Q = [], qi = 0, score = 0;
@@ -327,7 +379,7 @@ function tab(t) {
 $("tL").onclick = () => tab("L");
 $("tQ").onclick = () => tab("Q");
 
-showStreak(); learn(); startQuiz();
+showStreak(); buildQueue(); learn(); startQuiz();
 </script>
 </body>
 </html>
