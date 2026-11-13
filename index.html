@@ -320,15 +320,16 @@ $("tryw").onclick = () => {
   $("werr").textContent = "Hãy vẽ từng nét theo thứ tự. Sai nét sẽ được gợi ý.";
   wr.quiz({ onComplete: () => { $("werr").textContent = "Giỏi lắm, bạn đã viết đúng hết các nét!"; bump(); } });
 };
+let retried = false;
 function rate(r) {
+  if (r === 0) { retried = true; flipped = false; learn(); return; } // Thử lại: úp thẻ, giữ nguyên từ này
   const w = qu.shift(), t = today(), c = srs[w.h] || { b: 0, d: t, fresh: 1 };
-  if (r === 0) { c.b = 0; c.d = t; qu.push(w); }
-  else if (r === 1) { c.b = Math.max(1, c.b); c.d = t + 1; }
+  if (retried) { c.b = 1; c.d = t + 1; }              // phải thử lại mới nhớ: ôn lại sau 1 ngày
   else { c.b = c.fresh ? 2 : Math.min(6, c.b + 1); c.d = t + GAP[c.b]; }
   delete c.fresh; srs[w.h] = c; put("hsk1_srs", srs);
   if (day.t !== t) day = { t, n: 0 };
   day.n++; put("hsk1_day", day); bump();
-  flipped = false; learn();
+  retried = false; flipped = false; learn();
 }
 $("flip").onclick = () => { flipped = true; learn(); };
 $("rate").querySelectorAll("button").forEach(b => b.onclick = () => rate(+b.dataset.r));
