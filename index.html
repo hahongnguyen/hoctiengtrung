@@ -55,10 +55,24 @@ select,button{font:inherit}
 .rate small{color:var(--slate);font-size:12px}
 .btn.bad{border-color:var(--bad);color:var(--bad)}
 footer{text-align:center;margin-top:24px}
+.landing header,.landing main,.landing footer{display:none}
+body:not(.landing) #home{display:none}
+#home{max-width:640px;margin:0 auto;padding:28px 16px}
+#home h1{font-size:26px;margin:0 0 8px;text-align:center}
+#home .lead{text-align:center;color:var(--slate);margin-bottom:20px;line-height:1.6}
+.lang{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px 16px;margin-bottom:10px;min-height:68px}
+.lang .g{font-size:34px;min-width:64px;text-align:center;color:var(--jade)}
+.lang b{display:block;font-size:18px}.lang small{color:var(--slate)}
+.back{text-decoration:none;color:var(--slate);font-size:14px;margin-right:10px}
 </style>
 </head>
 <body>
-<header><span class="brand">Hán ngữ nhập môn</span><span class="muted" id="streak"></span></header>
+<div id="home">
+  <h1>Chào mừng bạn đến với góc học ngoại ngữ 🌏</h1>
+  <p class="lead">Học từ vựng thông dụng bằng thẻ ghi nhớ: lật thẻ, tự nhớ lại, ôn đúng lúc sắp quên. Hãy chọn một ngôn ngữ để bắt đầu.</p>
+  <div id="langs"></div>
+</div>
+<header><a class="back" href="#" id="homeLink">← Trang chủ</a><span class="brand" id="brand">Hán ngữ nhập môn</span><span class="muted" id="streak"></span></header>
 <main>
   <div class="row"><label for="lesson" class="muted">Chọn bài</label><select id="lesson" class="btn"></select></div>
   <div class="tabs" role="tablist">
@@ -80,7 +94,7 @@ footer{text-align:center;margin-top:24px}
       <div class="rate" id="rate"><button class="btn bad" data-r="0">Thử lại</button><button class="btn main" data-r="2">Tiếp theo</button></div>
       <div id="back">
         <div class="box" id="note"><span class="tag" id="tag"></span><p id="ntext"></p></div>
-        <div class="box top">
+        <div class="box top" id="wsec">
           <p class="muted" style="margin-bottom:8px">Tập viết từng nét</p>
           <div class="chips" id="chars"></div>
           <div id="wbox"></div>
@@ -93,7 +107,7 @@ footer{text-align:center;margin-top:24px}
   </section>
 
   <section id="qz" hidden><div class="box" id="quiz"></div></section>
-  <footer class="muted">Hình nét chữ: thư viện Hanzi Writer (mã nguồn mở) · Phiên bản 5</footer>
+  <footer class="muted">Hình nét chữ: thư viện Hanzi Writer (mã nguồn mở) · Phiên bản 6</footer>
 </main>
 
 <script>
@@ -188,19 +202,114 @@ const RAW = `我|wǒ|tôi|ngã
 高兴|gāoxìng|vui|cao hứng
 漂亮|piàoliang|đẹp|phiêu lượng`;
 
-const W = RAW.trim().split("\n").map(l => { const [h, p, m, hv, t, n] = l.split("|"); return { h, p, m, hv, t, n }; });
+const DATA = {
+ja: `私|わたし · watashi|tôi|tư
+あなた|anata|bạn
+はい|hai|vâng, dạ
+いいえ|iie|không
+ありがとう|arigatō|cảm ơn
+すみません|sumimasen|xin lỗi, xin phép
+こんにちは|konnichiwa|xin chào (ban ngày)
+さようなら|sayōnara|tạm biệt
+水|みず · mizu|nước|thủy
+人|ひと · hito|người|nhân
+日本|にほん · Nihon|Nhật Bản|nhật bản
+学生|がくせい · gakusei|học sinh|học sinh
+先生|せんせい · sensei|giáo viên|tiên sinh
+食べる|たべる · taberu|ăn
+飲む|のむ · nomu|uống|ẩm
+行く|いく · iku|đi|hành
+大きい|おおきい · ōkii|to, lớn|đại
+小さい|ちいさい · chiisai|nhỏ|tiểu
+一|いち · ichi|một|nhất
+二|に · ni|hai|nhị
+三|さん · san|ba|tam`,
+ko: `저|jeo|tôi (lịch sự)
+나|na|tôi (thân mật)
+네|ne|vâng
+아니요|aniyo|không
+감사합니다|gamsahamnida|cảm ơn
+안녕하세요|annyeonghaseyo|xin chào
+안녕히 가세요|annyeonghi gaseyo|tạm biệt (nói với người ra về)
+미안합니다|mianhamnida|xin lỗi
+물|mul|nước
+사람|saram|người
+한국|Hanguk|Hàn Quốc|hàn quốc
+학생|haksaeng|học sinh|học sinh
+선생님|seonsaengnim|giáo viên|tiên sinh
+먹다|meokda|ăn
+마시다|masida|uống
+가다|gada|đi
+크다|keuda|to, lớn
+작다|jakda|nhỏ
+하나|hana|một
+둘|dul|hai
+셋|set|ba`,
+th: `ฉัน|chan|tôi
+คุณ|khun|bạn
+ใช่|chai|vâng, đúng
+ไม่|mai|không
+ขอบคุณ|khop khun|cảm ơn
+สวัสดี|sawatdi|xin chào, tạm biệt
+ขอโทษ|kho thot|xin lỗi
+น้ำ|nam|nước
+คน|khon|người
+ไทย|thai|Thái Lan, người Thái
+นักเรียน|nak rian|học sinh
+ครู|khru|giáo viên
+กิน|kin|ăn
+ดื่ม|duem|uống
+ไป|pai|đi
+ใหญ่|yai|to, lớn
+เล็ก|lek|nhỏ
+ดี|di|tốt
+หนึ่ง|nueng|một
+สอง|song|hai
+สาม|sam|ba`,
+sa: `नमस्ते|namaste|xin chào, kính lễ
+धन्यवादः|dhanyavādaḥ|cảm ơn
+अहम्|aham|tôi|ngã
+त्वम्|tvam|bạn
+बुद्धः|buddhaḥ|Phật, bậc giác ngộ|Phật
+धर्मः|dharmaḥ|Pháp, chánh pháp|Pháp
+सङ्घः|saṅghaḥ|Tăng đoàn|Tăng
+ॐ|oṃ|âm thiêng Om
+शान्तिः|śāntiḥ|bình an|tịch tĩnh
+करुणा|karuṇā|lòng bi|Bi
+मैत्री|maitrī|lòng từ|Từ
+प्रज्ञा|prajñā|trí tuệ|Bát-nhã
+ध्यानम्|dhyānam|thiền|Thiền
+निर्वाणम्|nirvāṇam|niết bàn|Niết-bàn
+दुःखम्|duḥkham|khổ|Khổ
+अनित्यम्|anityam|vô thường|Vô thường
+अनात्मन्|anātman|vô ngã|Vô ngã
+कर्म|karma|nghiệp|Nghiệp
+सत्यम्|satyam|chân lý, sự thật
+जीवनम्|jīvanam|cuộc sống`
+};
+const LANGS = {
+  zh: { name: "Tiếng Trung", g: "中", desc: "Chữ Hán, pinyin, Hán Việt, tập viết từng nét", brand: "Hán ngữ nhập môn", v: "zh", tl: "zh-CN", w: true },
+  ja: { name: "Tiếng Nhật", g: "日", desc: "Kanji, hiragana và từ thông dụng", brand: "Nhật ngữ nhập môn", v: "ja", tl: "ja", yd: "jap" },
+  ko: { name: "Tiếng Hàn", g: "한", desc: "Hangul và từ thông dụng", brand: "Hàn ngữ nhập môn", v: "ko", tl: "ko", yd: "ko" },
+  th: { name: "Tiếng Thái", g: "ไทย", desc: "Chữ Thái và từ thông dụng", brand: "Thái ngữ nhập môn", v: "th", tl: "th" },
+  sa: { name: "Tiếng Phạn", g: "ॐ", desc: "Sanskrit: thuật ngữ trong kinh Phật (đọc bằng giọng Hindi gần đúng)", brand: "Phạn ngữ nhập môn", v: "hi", tl: "hi" }
+};
+const h0 = location.hash.slice(1), code = LANGS[h0] ? h0 : "zh", L = LANGS[code], PFX = code === "zh" ? "hsk1_" : code + "_";
+document.body.classList.toggle("landing", !LANGS[h0]);
+window.addEventListener("hashchange", () => location.reload());
+const W = (code === "zh" ? RAW : DATA[code]).trim().split("\n").map(l => { const [h, p, m, hv, t, n] = l.split("|"); return { h, p, m, hv, t, n }; });
 const PER = 10, LESSONS = Math.ceil(W.length / PER);
 const $ = id => document.getElementById(id);
 const rnd = a => [...a].sort(() => Math.random() - .5);
 const get = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
 const put = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 
-let known = new Set(get("hsk1_known", [])), st = get("hsk1_streak", { n: 0, last: "" });
+let known = new Set(get(PFX + "known", [])), st = get(PFX + "streak", { n: 0, last: "" });
 let lesson = -1, wr = null;
-let srs = get("hsk1_srs", {}), day = get("hsk1_day", { t: 0, n: 0 }), goal = +get("hsk1_goal", 10), rev = false;
+let srs = get(PFX + "srs", {}), day = get(PFX + "day", { t: 0, n: 0 }), goal = +get(PFX + "goal", 10), rev = false;
 const GAP = [0, 1, 2, 4, 7, 15, 30];
 const today = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 6e4) / 864e5);
-get("hsk1_known", []).forEach(h => { if (!srs[h]) srs[h] = { b: 3, d: today() + 3 }; });
+get(PFX + "known", []).forEach(h => { if (!srs[h]) srs[h] = { b: 3, d: today() + 3 }; });
 const isKnown = w => srs[w.h] && srs[w.h].b >= 3;
 let qu = [], flipped = false;
 function buildQueue(more) {
@@ -215,7 +324,7 @@ function bump() {
   const t = new Date().toDateString();
   if (st.last === t) return;
   st.n = st.last === new Date(Date.now() - 864e5).toDateString() ? st.n + 1 : 1;
-  st.last = t; put("hsk1_streak", st); showStreak();
+  st.last = t; put(PFX + "streak", st); showStreak();
 }
 function showStreak() { $("streak").textContent = st.n ? `Chuỗi ${st.n} ngày học` : ""; }
 
@@ -226,7 +335,7 @@ $("lesson").onchange = e => { lesson = +e.target.value; buildQueue(); learn(); s
 let zhVoice = null;
 function pickVoice() {
   const vs = speechSynthesis.getVoices();
-  zhVoice = vs.find(v => /^zh[-_]CN/i.test(v.lang)) || vs.find(v => /^zh/i.test(v.lang)) || null;
+  zhVoice = vs.find(v => v.lang.replace("_", "-").toLowerCase().startsWith(L.v)) || null;
 }
 if ("speechSynthesis" in window) {
   pickVoice();
@@ -235,12 +344,10 @@ if ("speechSynthesis" in window) {
 const ttsAudio = new Audio();
 ttsAudio.preload = "auto";
 function ttsUrls(t) {
-  const q = encodeURIComponent(t);
-  return [
-    "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=zh-CN&q=" + q,
-    "https://fanyi.baidu.com/gettts?lan=zh&spd=4&source=web&text=" + q,
-    "https://dict.youdao.com/dictvoice?audio=" + q + "&le=zh"
-  ];
+  const q = encodeURIComponent(t), u = ["https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + L.tl + "&q=" + q];
+  if (code === "zh") u.push("https://fanyi.baidu.com/gettts?lan=zh&spd=4&source=web&text=" + q);
+  if (code === "zh" || L.yd) u.push("https://dict.youdao.com/dictvoice?audio=" + q + "&le=" + (L.yd || "zh"));
+  return u;
 }
 let ttsToken = 0;
 function speakFallback(t) {
@@ -301,7 +408,7 @@ function learn() {
   $("chars").innerHTML = [...w.h].map((ch, k) => `<button class="btn ch" data-k="${k}">${ch}</button>`).join("");
   $("chars").querySelectorAll(".ch").forEach(b => b.onclick = () => draw(+b.dataset.k));
   $("count").textContent = `Còn ${qu.length} thẻ trong phiên`;
-  if (flipped) draw(0); else { if (wr) { try { wr.cancelQuiz(); } catch (e) {} } $("wbox").innerHTML = ""; $("werr").textContent = ""; }
+  if (flipped && L.w) draw(0); else { if (wr) { try { wr.cancelQuiz(); } catch (e) {} } $("wbox").innerHTML = ""; $("werr").textContent = ""; }
 }
 function draw(k) {
   const c = [...qu[0].h][k];
@@ -327,14 +434,14 @@ function rate(r) {
   const w = qu.shift(), t = today(), c = srs[w.h] || { b: 0, d: t, fresh: 1 };
   if (retried) { c.b = 1; c.d = t + 1; }              // phải thử lại mới nhớ: ôn lại sau 1 ngày
   else { c.b = c.fresh ? 2 : Math.min(6, c.b + 1); c.d = t + GAP[c.b]; }
-  delete c.fresh; srs[w.h] = c; put("hsk1_srs", srs);
+  delete c.fresh; srs[w.h] = c; put(PFX + "srs", srs);
   if (day.t !== t) day = { t, n: 0 };
-  day.n++; put("hsk1_day", day); bump();
+  day.n++; put(PFX + "day", day); bump();
   retried = false; flipped = false; learn();
 }
 $("flip").onclick = () => { flipped = true; learn(); };
 $("rate").querySelectorAll("button").forEach(b => b.onclick = () => rate(+b.dataset.r));
-$("goal").onchange = e => { goal = +e.target.value; put("hsk1_goal", goal); learn(); };
+$("goal").onchange = e => { goal = +e.target.value; put(PFX + "goal", goal); learn(); };
 $("more").onclick = () => { buildQueue(true); learn(); };
 $("say").onclick = () => speak(qu[0].h);
 
@@ -375,6 +482,9 @@ function tab(t) {
 $("tL").onclick = () => tab("L");
 $("tQ").onclick = () => tab("Q");
 
+$("wsec").hidden = !L.w; $("brand").textContent = L.brand; document.title = L.brand;
+$("langs").innerHTML = Object.entries(LANGS).map(([k, v]) => `<a class="btn lang" href="#${k}"><span class="g">${v.g}</span><span><b>Học ${v.name.toLowerCase()}</b><small>${v.desc}</small></span></a>`).join("");
+$("homeLink").onclick = e => { e.preventDefault(); history.pushState("", "", location.pathname); location.reload(); };
 showStreak(); buildQueue(); learn(); startQuiz();
 </script>
 </body>
