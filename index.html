@@ -4,7 +4,7 @@
 <meta http-equiv="Cache-Control" content="no-cache">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hán ngữ nhập môn – Học chữ Hán dễ nhớ</title>
+<title>Góc học ngoại ngữ</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600&family=Be+Vietnam+Pro:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5.0/dist/hanzi-writer.min.js"></script>
 <style>
@@ -68,7 +68,8 @@ body:not(.landing) #home{display:none}
 </head>
 <body>
 <div id="home">
-  <h1>Chào mừng bạn đến với góc học ngoại ngữ 🌏</h1>
+  <h1>Góc học ngoại ngữ 🌏</h1>
+  <p class="lead" style="margin-bottom:6px"><b>Chào mừng bạn!</b></p>
   <p class="lead">Học từ vựng thông dụng bằng thẻ ghi nhớ: lật thẻ, tự nhớ lại, ôn đúng lúc sắp quên. Hãy chọn một ngôn ngữ để bắt đầu.</p>
   <div id="langs"></div>
 </div>
@@ -107,7 +108,7 @@ body:not(.landing) #home{display:none}
   </section>
 
   <section id="qz" hidden><div class="box" id="quiz"></div></section>
-  <footer class="muted">Hình nét chữ: thư viện Hanzi Writer (mã nguồn mở) · Phiên bản 7</footer>
+  <footer class="muted">Hình nét chữ: thư viện Hanzi Writer (mã nguồn mở) · Phiên bản 8</footer>
 </main>
 
 <script>
@@ -418,6 +419,89 @@ DATA.sa += `
 लोकः|lokaḥ|thế gian|Thế gian
 पुण्यम्|puṇyam|công đức, phước|Phước đức
 शरणम्|śaraṇam|nương tựa, quy y|Quy y`;
+DATA.zh = `时间|shíjiān|thời gian|thời gian
+现在|xiànzài|bây giờ|hiện tại
+早上|zǎoshang|buổi sáng|tảo thượng
+中午|zhōngwǔ|buổi trưa|trung ngọ
+晚上|wǎnshang|buổi tối|vãn thượng
+年|nián|năm|niên
+月|yuè|tháng|nguyệt
+日|rì|ngày|nhật
+星期|xīngqī|tuần, thứ|tinh kỳ
+点|diǎn|giờ (đúng)|điểm
+分钟|fēnzhōng|phút|phân chung
+今年|jīnnián|năm nay|kim niên
+明年|míngnián|năm sau|minh niên
+去年|qùnián|năm ngoái|khứ niên
+以前|yǐqián|trước đây|dĩ tiền
+以后|yǐhòu|sau này|dĩ hậu
+百|bǎi|trăm|bách
+千|qiān|nghìn|thiên
+万|wàn|mười nghìn|vạn`;
+DATA.ja += `
+時間|じかん · jikan|thời gian|thời gian
+今|いま · ima|bây giờ|kim
+午前|ごぜん · gozen|buổi sáng (AM)|ngọ tiền
+午後|ごご · gogo|buổi chiều (PM)|ngọ hậu
+月|つき · tsuki|tháng, mặt trăng|nguyệt
+年|とし · toshi|năm|niên
+週|しゅう · shū|tuần|chu
+毎日|まいにち · mainichi|mỗi ngày|mỗi nhật
+今年|ことし · kotoshi|năm nay|kim niên
+来年|らいねん · rainen|năm sau|lai niên
+去年|きょねん · kyonen|năm ngoái|khứ niên
+今週|こんしゅう · konshū|tuần này|kim chu
+千|せん · sen|nghìn|thiên
+万|まん · man|mười nghìn|vạn
+何時|なんじ · nanji|mấy giờ|hà thời`;
+DATA.ko += `
+지금|jigeum|bây giờ
+오전|ojeon|buổi sáng (AM)|ngọ tiền
+오후|ohu|buổi chiều (PM)|ngọ hậu
+저녁|jeonyeok|buổi tối
+점심|jeomsim|buổi trưa, bữa trưa
+달|dal|tháng, mặt trăng
+년|nyeon|năm|niên
+주|ju|tuần|chu
+매일|maeil|mỗi ngày|mỗi nhật
+올해|olhae|năm nay
+내년|naenyeon|năm sau|lai niên
+작년|jaknyeon|năm ngoái|tạc niên
+백|baek|một trăm|bách
+천|cheon|một nghìn|thiên
+만|man|mười nghìn|vạn
+몇 시|myeot si|mấy giờ`;
+DATA.th += `
+เวลา|wela|thời gian
+ตอนนี้|ton ni|bây giờ
+เที่ยง|thiang|buổi trưa
+เย็น|yen|buổi chiều tối
+วัน|wan|ngày
+เดือน|duean|tháng
+ปี|pi|năm
+สัปดาห์|sapda|tuần
+ทุกวัน|thuk wan|mỗi ngày
+ปีนี้|pi ni|năm nay
+ปีหน้า|pi na|năm sau
+ปีที่แล้ว|pi thi laeo|năm ngoái
+ร้อย|roi|một trăm
+พัน|phan|một nghìn
+กี่โมง|ki mong|mấy giờ`;
+DATA.sa += `
+एकम्|ekam|một
+द्वे|dve|hai
+त्रीणि|trīṇi|ba
+चत्वारि|catvāri|bốn
+पञ्च|pañca|năm
+षट्|ṣaṭ|sáu
+सप्त|sapta|bảy
+अष्ट|aṣṭa|tám
+नव|nava|chín
+दश|daśa|mười
+कालः|kālaḥ|thời gian|Thời
+अद्य|adya|hôm nay
+श्वः|śvaḥ|ngày mai
+ह्यः|hyaḥ|hôm qua`;
 const LANGS = {
   zh: { name: "Tiếng Trung", g: "中", desc: "Chữ Hán, pinyin, Hán Việt, tập viết từng nét", brand: "Hán ngữ nhập môn", v: "zh", tl: "zh-CN", w: true },
   ja: { name: "Tiếng Nhật", g: "日", desc: "Kanji, hiragana và từ thông dụng", brand: "Nhật ngữ nhập môn", v: "ja", tl: "ja", yd: "jap" },
@@ -428,7 +512,7 @@ const LANGS = {
 const h0 = location.hash.slice(1), code = LANGS[h0] ? h0 : "zh", L = LANGS[code], PFX = code === "zh" ? "hsk1_" : code + "_";
 document.body.classList.toggle("landing", !LANGS[h0]);
 window.addEventListener("hashchange", () => location.reload());
-const W = (code === "zh" ? RAW : DATA[code]).trim().split("\n").map(l => { const [h, p, m, hv, t, n] = l.split("|"); return { h, p, m, hv, t, n }; });
+const W = (code === "zh" ? RAW + "\n" + DATA.zh : DATA[code]).trim().split("\n").map(l => { const [h, p, m, hv, t, n] = l.split("|"); return { h, p, m, hv, t, n }; });
 const PER = 10, LESSONS = Math.ceil(W.length / PER);
 const $ = id => document.getElementById(id);
 const rnd = a => [...a].sort(() => Math.random() - .5);
@@ -613,7 +697,7 @@ function tab(t) {
 $("tL").onclick = () => tab("L");
 $("tQ").onclick = () => tab("Q");
 
-$("wsec").hidden = !L.w; $("brand").textContent = L.brand; document.title = L.brand;
+$("wsec").hidden = !L.w; $("brand").textContent = L.brand; document.title = LANGS[h0] ? L.brand + " – Góc học ngoại ngữ" : "Góc học ngoại ngữ";
 $("langs").innerHTML = Object.entries(LANGS).map(([k, v]) => `<a class="btn lang" href="#${k}"><span class="g">${v.g}</span><span><b>Học t${v.name.slice(1)}</b><small>${v.desc}</small></span></a>`).join("");
 $("homeLink").onclick = e => { e.preventDefault(); history.pushState("", "", location.pathname); location.reload(); };
 showStreak(); buildQueue(); learn(); startQuiz();
