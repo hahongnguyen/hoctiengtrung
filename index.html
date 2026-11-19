@@ -64,11 +64,36 @@ body:not(.landing) #home{display:none}
 .lang .g{font-size:34px;min-width:64px;text-align:center;color:var(--jade)}
 .lang b{display:block;font-size:18px}.lang small{color:var(--slate)}
 .back{text-decoration:none;color:var(--slate);font-size:14px;margin-right:10px}
+
+/* ---- giao diện hiện đại ---- */
+:root{--jade-d:color-mix(in srgb,var(--jade) 78%,#000);--tint:color-mix(in srgb,var(--jade) 12%,#fff)}
+body{min-height:100vh;background:radial-gradient(900px 420px at 50% -100px,color-mix(in srgb,var(--jade) 18%,transparent),transparent),var(--bg)}
+header{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.brand{font-weight:700;background:linear-gradient(90deg,var(--jade),var(--jade-d));-webkit-background-clip:text;background-clip:text;color:transparent}
+.box{border:0;border-radius:22px;box-shadow:0 6px 24px rgba(27,43,58,.07)}
+.top{background:linear-gradient(180deg,var(--tint),#fff 75%)}
+.btn{border-radius:14px;transition:transform .15s,box-shadow .15s,border-color .15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(27,43,58,.1)}
+.btn:active{transform:scale(.97)}
+.btn.main,.tabs .btn[aria-selected=true]{background:linear-gradient(135deg,var(--jade),var(--jade-d));border-color:transparent;color:#fff}
+.btn.main{box-shadow:0 6px 16px color-mix(in srgb,var(--jade) 35%,transparent)}
+.bar{height:10px}.bar i{background:linear-gradient(90deg,var(--jade),var(--jade-d))}
+.hv,.tag.n,.ch.on,.opt.right{background:var(--tint)}
+.hanzi{color:var(--jade-d)}
+.pop{animation:pop .3s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+#home h1{font-size:32px;line-height:1.25;background:linear-gradient(90deg,#D9482B,#E0457B,#7A4FD6,#2F6FEB);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lang{position:relative;overflow:hidden;border:0;border-radius:20px;background:#fff;box-shadow:0 6px 20px rgba(27,43,58,.08)}
+.lang::before{content:"";position:absolute;inset:0 auto 0 0;width:6px;background:var(--c)}
+.lang .g{display:flex;align-items:center;justify-content:center;height:64px;border-radius:16px;background:var(--c);color:#fff;font-size:30px}
+.lang:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(27,43,58,.14)}
+.lang,.lang:hover{text-decoration:none;color:var(--ink)}.lang b{text-decoration:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div id="home">
-  <h1>Góc học ngoại ngữ 🌏</h1>
+  <h1>Góc học ngoại ngữ</h1>
   <p class="lead" style="margin-bottom:6px"><b>Chào mừng bạn!</b></p>
   <p class="lead">Học từ vựng thông dụng bằng thẻ ghi nhớ: lật thẻ, tự nhớ lại, ôn đúng lúc sắp quên. Hãy chọn một ngôn ngữ để bắt đầu.</p>
   <div id="langs"></div>
@@ -108,7 +133,7 @@ body:not(.landing) #home{display:none}
   </section>
 
   <section id="qz" hidden><div class="box" id="quiz"></div></section>
-  <footer class="muted">Hình nét chữ: thư viện Hanzi Writer (mã nguồn mở) · Phiên bản 8</footer>
+  <footer class="muted">Hình nét chữ: thư viện Hanzi Writer (mã nguồn mở) · Phiên bản 9</footer>
 </main>
 
 <script>
@@ -502,6 +527,93 @@ DATA.sa += `
 अद्य|adya|hôm nay
 श्वः|śvaḥ|ngày mai
 ह्यः|hyaḥ|hôm qua`;
+DATA.zh += `
+医院|yīyuàn|bệnh viện|y viện
+商店|shāngdiàn|cửa hàng|thương điếm
+饭店|fàndiàn|nhà hàng, khách sạn|phạn điếm
+银行|yínháng|ngân hàng|ngân hàng
+机场|jīchǎng|sân bay|cơ trường
+火车站|huǒchēzhàn|ga tàu hỏa|hỏa xa trạm
+车|chē|xe|xa
+出租车|chūzūchē|taxi|xuất tô xa
+飞机|fēijī|máy bay|phi cơ
+地铁|dìtiě|tàu điện ngầm|địa thiết
+公共汽车|gōnggòng qìchē|xe buýt|công cộng khí xa
+左|zuǒ|trái|tả
+右|yòu|phải|hữu
+前|qián|trước, phía trước|tiền
+后|hòu|sau, phía sau|hậu
+这里|zhèlǐ|ở đây|giá lý
+哪里|nǎlǐ|ở đâu|nả lý
+远|yuǎn|xa|viễn
+近|jìn|gần|cận`;
+DATA.ja += `
+駅|えき · eki|nhà ga|dịch
+病院|びょういん · byōin|bệnh viện|bệnh viện
+銀行|ぎんこう · ginkō|ngân hàng|ngân hàng
+店|みせ · mise|cửa hàng|điếm
+空港|くうこう · kūkō|sân bay|không cảng
+電車|でんしゃ · densha|tàu điện|điện xa
+車|くるま · kuruma|xe ô tô|xa
+バス|basu|xe buýt
+飛行機|ひこうき · hikōki|máy bay|phi hành cơ
+左|ひだり · hidari|trái|tả
+右|みぎ · migi|phải|hữu
+前|まえ · mae|trước, phía trước|tiền
+後ろ|うしろ · ushiro|phía sau
+ここ|koko|ở đây
+どこ|doko|ở đâu
+遠い|とおい · tōi|xa|viễn
+近い|ちかい · chikai|gần|cận`;
+DATA.ko += `
+역|yeok|nhà ga|dịch
+병원|byeongwon|bệnh viện|bệnh viện
+은행|eunhaeng|ngân hàng|ngân hàng
+가게|gage|cửa hàng
+공항|gonghang|sân bay|không cảng
+지하철|jihacheol|tàu điện ngầm|địa hạ thiết
+버스|beoseu|xe buýt
+택시|taeksi|taxi
+비행기|bihaenggi|máy bay|phi hành cơ
+왼쪽|oenjjok|bên trái
+오른쪽|oreunjjok|bên phải
+앞|ap|phía trước
+뒤|dwi|phía sau
+여기|yeogi|ở đây
+어디|eodi|ở đâu
+멀다|meolda|xa
+가깝다|gakkapda|gần`;
+DATA.th += `
+โรงพยาบาล|rong phayaban|bệnh viện
+ธนาคาร|thanakhan|ngân hàng
+ร้าน|ran|cửa hàng, quán
+สนามบิน|sanam bin|sân bay
+รถ|rot|xe
+รถไฟ|rot fai|tàu hỏa
+รถเมล์|rot me|xe buýt
+แท็กซี่|thaeksi|taxi
+เครื่องบิน|khrueang bin|máy bay
+ซ้าย|sai|trái
+ขวา|khwa|phải
+ตรงไป|trong pai|đi thẳng
+ที่นี่|thi ni|ở đây
+ที่ไหน|thi nai|ở đâu
+ไกล|klai|xa
+ใกล้|klai|gần (khác thanh với "xa")`;
+DATA.sa += `
+मार्गः|mārgaḥ|con đường, đạo|Đạo
+विहारः|vihāraḥ|tinh xá, chùa|Tinh xá
+गृहम्|gṛham|nhà
+ग्रामः|grāmaḥ|làng
+नगरम्|nagaram|thành phố
+वनम्|vanam|rừng
+पर्वतः|parvataḥ|núi
+नदी|nadī|sông
+जलम्|jalam|nước
+गच्छति|gacchati|đi
+आगच्छति|āgacchati|đến
+कुत्र|kutra|ở đâu
+अत्र|atra|ở đây`;
 const LANGS = {
   zh: { name: "Tiếng Trung", g: "中", desc: "Chữ Hán, pinyin, Hán Việt, tập viết từng nét", brand: "Hán ngữ nhập môn", v: "zh", tl: "zh-CN", w: true },
   ja: { name: "Tiếng Nhật", g: "日", desc: "Kanji, hiragana và từ thông dụng", brand: "Nhật ngữ nhập môn", v: "ja", tl: "ja", yd: "jap" },
@@ -509,8 +621,11 @@ const LANGS = {
   th: { name: "Tiếng Thái", g: "ไทย", desc: "Chữ Thái và từ thông dụng", brand: "Thái ngữ nhập môn", v: "th", tl: "th" },
   sa: { name: "Tiếng Phạn", g: "ॐ", desc: "Sanskrit: thuật ngữ trong kinh Phật (đọc bằng giọng Hindi gần đúng)", brand: "Phạn ngữ nhập môn", v: "hi", tl: "hi" }
 };
+const ACC = { zh: "#D9482B", ja: "#E0457B", ko: "#2F6FEB", th: "#E58A00", sa: "#7A4FD6" };
 const h0 = location.hash.slice(1), code = LANGS[h0] ? h0 : "zh", L = LANGS[code], PFX = code === "zh" ? "hsk1_" : code + "_";
 document.body.classList.toggle("landing", !LANGS[h0]);
+if (LANGS[h0]) document.documentElement.style.setProperty("--jade", ACC[code]);
+function pop() { const c = $("card"); c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); }
 window.addEventListener("hashchange", () => location.reload());
 const W = (code === "zh" ? RAW + "\n" + DATA.zh : DATA[code]).trim().split("\n").map(l => { const [h, p, m, hv, t, n] = l.split("|"); return { h, p, m, hv, t, n }; });
 const PER = 10, LESSONS = Math.ceil(W.length / PER);
@@ -611,7 +726,7 @@ function learn() {
   $("empty").hidden = !empty; $("card").hidden = empty;
   if (empty) { $("more").hidden = !d.some(x => !srs[x.h]); return; }
   const w = qu[0], c = srs[w.h];
-  $("hanzi").textContent = w.h; $("pinyin").textContent = w.p; $("meaning").textContent = w.m;
+  pop(); $("hanzi").textContent = w.h; $("pinyin").textContent = w.p; $("meaning").textContent = w.m;
   $("hv").textContent = "Hán Việt: " + (w.hv || "");
   $("hanzi").hidden = rev && !flipped; $("meaning").hidden = !rev && !flipped;
   $("meaning").style.fontSize = rev && !flipped ? "28px" : "";
@@ -698,7 +813,7 @@ $("tL").onclick = () => tab("L");
 $("tQ").onclick = () => tab("Q");
 
 $("wsec").hidden = !L.w; $("brand").textContent = L.brand; document.title = LANGS[h0] ? L.brand + " – Góc học ngoại ngữ" : "Góc học ngoại ngữ";
-$("langs").innerHTML = Object.entries(LANGS).map(([k, v]) => `<a class="btn lang" href="#${k}"><span class="g">${v.g}</span><span><b>Học t${v.name.slice(1)}</b><small>${v.desc}</small></span></a>`).join("");
+$("langs").innerHTML = Object.entries(LANGS).map(([k, v]) => `<a class="btn lang" href="#${k}" style="--c:${ACC[k]}"><span class="g">${v.g}</span><span><b>Học t${v.name.slice(1)}</b><small>${v.desc}</small></span></a>`).join("");
 $("homeLink").onclick = e => { e.preventDefault(); history.pushState("", "", location.pathname); location.reload(); };
 showStreak(); buildQueue(); learn(); startQuiz();
 </script>
